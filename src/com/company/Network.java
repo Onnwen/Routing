@@ -61,8 +61,14 @@ public class Network {
         }
     }
 
-    public EstimatedRoute estimateRoute(Device sendingDevice, Device receivingDevice) {
-        EstimatedRoute estimatedRoute = new EstimatedRoute(sendingDevice, receivingDevice, this);
-        return estimatedRoute;
+    public RoutesFound estimateRoute(Device sendingDevice, Device receivingDevice) {
+        final int totalEstimatedRoute = 100;
+        RoutesFound routesFound = new RoutesFound(totalEstimatedRoute);
+
+        do {
+            routesFound.addFoundRoute(new EstimatedRoute(sendingDevice, receivingDevice, this, routesFound.getRoutesToAvoid()));
+        } while(routesFound.getLast().validRoute());
+
+        return routesFound;
     }
 }

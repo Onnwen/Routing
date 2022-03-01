@@ -5,13 +5,14 @@ public class EstimatedRoute {
     private Device arrivingDevice;
     private double cost;
     private int hops;
+    private long calculationTime;
 
     private int maximumHops;
     private int maximumCost;
     private int authorizedMaximumHops;
     private int attempt;
 
-    public EstimatedRoute(Device sendingDevice, Device arrivingDevice, Network net) {
+    public EstimatedRoute(Device sendingDevice, Device arrivingDevice, Network net, Route[] routesToAvoid) {
         this.startingPoint = sendingDevice.copy();
         this.arrivingDevice = arrivingDevice;
 
@@ -25,6 +26,11 @@ public class EstimatedRoute {
         PathNetwork network = new PathNetwork(net);
         network.setMainDevice(sendingDevice);
 
+        for(int i=0; i<routesToAvoid.length; i++) {
+            network.addGlobalRouteToAvoid(routesToAvoid[i]);
+        }
+
+        long start = System.nanoTime();
         do {
             reset();
             resetStartingPoint();
@@ -32,6 +38,8 @@ public class EstimatedRoute {
             maximumHops++;
             checkLink(this, arrivingDevice.copy(), network);
         } while (canProceed() && !startingPoint.equals(arrivingDevice));
+        long finish = System.nanoTime();
+        calculationTime = finish - start;
     }
 
     private EstimatedRoute checkLink(EstimatedRoute currentRoute, Device arrivingDevice, PathNetwork network) {
@@ -128,17 +136,19 @@ public class EstimatedRoute {
         return currentDevice;
     }
 
+    public boolean validRoute() {
+        return getLastDevice().sameAs(arrivingDevice);
+    }
+
     public void print() {
-        System.out.println("----------------------------------------------------------");
-        if (!getLastDevice().sameAs(arrivingDevice)) {
+        if (!validRoute()) {
             System.out.println("\uDBC0\uDD84\tNessun percorso trovato.");
             System.out.println("\uDBC1\uDE72\tPARTENZA: " + startingPoint.getId());
             System.out.println("\uDBC3\uDC58\tARRIVO: " + arrivingDevice.getId());
             System.out.print("\uDBC0\uDE64\tSalti massimi tentati: " + maximumHops);
         } else {
             Device currentDevice = startingPoint;
-            System.out.println("\uDBC0\uDD85\tÈ stato trovato un percorso!");
-            System.out.println("\uDBC0\uDE64\tSalti: " + this.hops + " |  \uDBC0\uDF70 Costo: " + this.cost  + " |  \uDBC1\uDD80 Tentativi: " + this.attempt);
+            System.out.println("\uDBC0\uDE64\tSalti: " + this.hops + " | \uDBC0\uDF70 Costo: " + this.cost  + " | \uDBC1\uDD80 Tentativi: " + this.attempt);
             System.out.print("\n\uDBC1\uDE72\t\uDBC1\uDE57\tDISPOSITIVO " + currentDevice.getId().toString());
             try {
                 while (currentDevice.getLinkedRoutes()[0].linked()) {
@@ -152,7 +162,6 @@ public class EstimatedRoute {
                 System.out.print("\uDBC3\uDC58\t\uDBC1\uDE57\tDISPOSITIVO " + currentDevice.getId());
             }
         }
-        System.out.println("\n----------------------------------------------------------");
     }
 
     public Route getLastRoute() {
