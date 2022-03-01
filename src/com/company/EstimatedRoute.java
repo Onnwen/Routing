@@ -129,7 +129,7 @@ public class EstimatedRoute {
     }
 
     public void print() {
-        System.out.println("-----------------------------------------------------------");
+        System.out.println("----------------------------------------------------------");
         if (!getLastDevice().sameAs(arrivingDevice)) {
             System.out.println("\uDBC0\uDD84\tNessun percorso trovato.");
             System.out.println("\uDBC1\uDE72\tPARTENZA: " + startingPoint.getId());
@@ -152,7 +152,7 @@ public class EstimatedRoute {
                 System.out.print("\uDBC3\uDC58\t\uDBC1\uDE57\tDISPOSITIVO " + currentDevice.getId());
             }
         }
-        System.out.println("\n-----------------------------------------------------------");
+        System.out.println("\n----------------------------------------------------------");
     }
 
     public Route getLastRoute() {
