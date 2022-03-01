@@ -14,7 +14,7 @@ public class EstimatedRoute {
         this.startingPoint = sendingDevice.copy();
         this.arrivingDevice = arrivingDevice;
 
-        this.maximumHops = 3;
+        this.maximumHops = 0;
         this.maximumCost = 0;
         this.authorizedMaximumHops = 100;
         this.cost = 0;
@@ -23,23 +23,13 @@ public class EstimatedRoute {
         PathNetwork network = new PathNetwork(net);
         network.setMainDevice(sendingDevice);
 
-        /*
         do {
+            reset();
+            resetStartingPoint();
+            network.resetRoutesToAvoid();
             maximumHops++;
             checkLink(this, arrivingDevice.copy(), network);
         } while (canProceed() && !startingPoint.equals(arrivingDevice));
-
-        if (getLastDevice() != arrivingDevice) {
-            startingPoint = null;
-        }
-         */
-        System.out.println("Ricerca percorso tra " + startingPoint.getId() + " e " + arrivingDevice.getId());
-        if(checkLink(this, arrivingDevice.copy(), network) == null) {
-            System.out.println("null");
-        }
-        else {
-            System.out.println("Route found");
-        }
     }
 
     private EstimatedRoute checkLink(EstimatedRoute currentRoute, Device arrivingDevice, PathNetwork network) {
@@ -49,7 +39,6 @@ public class EstimatedRoute {
             return currentRoute;
         }
 
-        // Controllo se dispositivo finale è vicino.
         for(Route deviceRoute:networkLastDevice.getLinkedRoutes()) {
             if (!network.needToAvoid(deviceRoute)) {
                 Device nextDevice = deviceRoute.getNextDevice(networkLastDevice);
@@ -60,17 +49,15 @@ public class EstimatedRoute {
             }
         }
 
-        // Se dispositivo finale non è vicino.
         for(Route deviceRoute:networkLastDevice.getLinkedRoutes()) {
             if (!network.needToAvoid(deviceRoute) && deviceRoute.getNextDevice(networkLastDevice) != null) {
-                // Se ci sono ulteriori hops a disposizione
                 if (addHop(deviceRoute, deviceRoute.getNextDevice(networkLastDevice))) {
                     network.addRouteToAvoid(deviceRoute);
-                    // Se si è trovato il percorso
+
                     if (currentRoute.getLastDevice().sameAs(arrivingDevice)) {
                         return currentRoute;
                     }
-                    // Altrimenti si percorre una nuova rotta passando dal dispositivo aggiunto
+
                     checkLink(currentRoute, arrivingDevice, network);
                 }
                 else {
@@ -140,9 +127,10 @@ public class EstimatedRoute {
 
     public void print() {
         System.out.println("-----------------------------------------------------------------------------------------------------------");
-        // if (!getLastDevice().sameAs(arrivingDevice)) {
-        if (false) {
+        if (!getLastDevice().sameAs(arrivingDevice)) {
             System.out.println("\uDBC0\uDD84\tNessun percorso trovato.");
+            System.out.println("\uDBC1\uDE72\tPARTENZA: " + startingPoint.getId());
+            System.out.println("\uDBC3\uDC58\tARRIVO: " + arrivingDevice.getId());
             System.out.print("\uDBC0\uDE64\tSalti massimi tentati: " + maximumHops);
         } else {
             Device currentDevice = startingPoint;
