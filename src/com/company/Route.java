@@ -23,6 +23,10 @@ public class Route {
         this.two = null;
     }
 
+    public boolean sameAs(Route route) {
+        return this.id.toString().equals(route.getId().toString());
+    }
+
     public Route copy() {
         return new Route(this.id, this.cost);
     }

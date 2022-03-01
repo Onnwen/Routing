@@ -1,9 +1,8 @@
 package com.company;
 
-import java.io.File;
-
 public class EstimatedRoute {
     private Device startingPoint;
+    private Device arrivingDevice;
     private double cost;
     private int hops;
 
@@ -13,8 +12,9 @@ public class EstimatedRoute {
 
     public EstimatedRoute(Device sendingDevice, Device arrivingDevice, Network net) {
         this.startingPoint = sendingDevice.copy();
+        this.arrivingDevice = arrivingDevice;
 
-        this.maximumHops = 10;
+        this.maximumHops = 3;
         this.maximumCost = 0;
         this.authorizedMaximumHops = 100;
         this.cost = 0;
@@ -23,10 +23,23 @@ public class EstimatedRoute {
         PathNetwork network = new PathNetwork(net);
         network.setMainDevice(sendingDevice);
 
+        /*
         do {
             maximumHops++;
             checkLink(this, arrivingDevice.copy(), network);
-        } while (getLastDevice() == startingPoint && canProceed());
+        } while (canProceed() && !startingPoint.equals(arrivingDevice));
+
+        if (getLastDevice() != arrivingDevice) {
+            startingPoint = null;
+        }
+         */
+        System.out.println("Ricerca percorso tra " + startingPoint.getId() + " e " + arrivingDevice.getId());
+        if(checkLink(this, arrivingDevice.copy(), network) == null) {
+            System.out.println("null");
+        }
+        else {
+            System.out.println("Route found");
+        }
     }
 
     private EstimatedRoute checkLink(EstimatedRoute currentRoute, Device arrivingDevice, PathNetwork network) {
@@ -36,47 +49,55 @@ public class EstimatedRoute {
             return currentRoute;
         }
 
-        if (!canProceed()) {
-            return null;
-        }
-
-        network.addDeviceToAvoid(currentRoute.getLastDevice());
-
-        for(Route deviceRoute: networkLastDevice.getLinkedRoutes()) {
-            Device nextDevice = deviceRoute.getNextDevice(networkLastDevice);
-
-            if (currentRoute.getLastDevice().sameAs(arrivingDevice)) {
-                return currentRoute;
-            } else if (nextDevice != null && !network.needToAvoid(nextDevice)) {
-                addHop(deviceRoute, deviceRoute.getNextDevice(networkLastDevice));
-                if (currentRoute.getLastDevice().sameAs(arrivingDevice)) {
+        // Controllo se dispositivo finale è vicino.
+        for(Route deviceRoute:networkLastDevice.getLinkedRoutes()) {
+            if (!network.needToAvoid(deviceRoute)) {
+                Device nextDevice = deviceRoute.getNextDevice(networkLastDevice);
+                if (nextDevice.sameAs(arrivingDevice)) {
+                    addHop(deviceRoute, nextDevice);
                     return currentRoute;
                 }
-                if (checkLink(currentRoute, arrivingDevice, network) == null) {
-                    reset();
-                    return null;
+            }
+        }
+
+        // Se dispositivo finale non è vicino.
+        for(Route deviceRoute:networkLastDevice.getLinkedRoutes()) {
+            if (!network.needToAvoid(deviceRoute) && deviceRoute.getNextDevice(networkLastDevice) != null) {
+                // Se ci sono ulteriori hops a disposizione
+                if (addHop(deviceRoute, deviceRoute.getNextDevice(networkLastDevice))) {
+                    network.addRouteToAvoid(deviceRoute);
+                    // Se si è trovato il percorso
+                    if (currentRoute.getLastDevice().sameAs(arrivingDevice)) {
+                        return currentRoute;
+                    }
+                    // Altrimenti si percorre una nuova rotta passando dal dispositivo aggiunto
+                    checkLink(currentRoute, arrivingDevice, network);
+                }
+                else {
+                    break;
                 }
             }
         }
 
         if (getLastDevice().sameAs(startingPoint)) {
-            removeLastHop();
-            if (checkLink(currentRoute, arrivingDevice, network) == null) {
-                reset();
-                return null;
-            }
+            return null;
         }
-
-        reset();
-        return null;
+        else {
+            removeLastHop();
+            return checkLink(currentRoute, arrivingDevice, network);
+        }
     }
 
-    public void addHop(Route route, Device device) {
-        getLastDevice().addRoute(route.copy());
-        getLastRoute().setOne(getLastDevice());
-        getLastRoute().setTwo(device.copy());
-        incrementHops();
-        increaseCost(route.getCost());
+    public boolean addHop(Route route, Device device) {
+        if (canProceed()) {
+            getLastDevice().addRoute(route.copy());
+            getLastRoute().setOne(getLastDevice());
+            getLastRoute().setTwo(device.copy());
+            incrementHops();
+            increaseCost(route.getCost());
+            return true;
+        }
+        return false;
     }
 
     public void reset() {
@@ -118,27 +139,27 @@ public class EstimatedRoute {
     }
 
     public void print() {
-        if (startingPoint == null) {
-            System.out.println("Nessuna rotta è stata trovata rispettando i requisiti prestabili.");
-            System.out.println("Salti massimi: " + maximumHops);
-            System.out.println("Costo massimo: " + maximumCost);
-            return;
-        }
-
-        Device currentDevice = startingPoint;
         System.out.println("-----------------------------------------------------------------------------------------------------------");
-        System.out.println("\uDBC0\uDD85 Path find!");
-        System.out.println("HOPS: " + this.hops + " \uDBC0\uDE64 | COST: " + this.cost + " \uDBC0\uDF70");
-        System.out.print("\n\uDBC1\uDE57 DEVICE " + currentDevice.getId().toString());
-        try {
-            while (currentDevice.getLinkedRoutes()[0].linked()) {
-                System.out.print(" \uDBC3\uDC11 ");
-                System.out.println("\uDBC1\uDC98 ROUTE  " + currentDevice.getLinkedRoutes()[0].getId().toString() + " | " + currentDevice.getLinkedRoutes()[0].getCost() + " \uDBC0\uDF70");
-                System.out.println("↓");
-                currentDevice = currentDevice.getLinkedRoutes()[0].getTwo();
-                System.out.print("\uDBC1\uDE57 DEVICE " + currentDevice.getId());
+        // if (!getLastDevice().sameAs(arrivingDevice)) {
+        if (false) {
+            System.out.println("\uDBC0\uDD84\tNessun percorso trovato.");
+            System.out.print("\uDBC0\uDE64\tSalti massimi tentati: " + maximumHops);
+        } else {
+            Device currentDevice = startingPoint;
+            System.out.println("\uDBC0\uDD85\tÈ stato trovato un percorso!");
+            System.out.println("\uDBC0\uDE64\tSalti: " + this.hops + " |  \uDBC0\uDF70 Costo: " + this.cost);
+            System.out.print("\n\uDBC1\uDE57\tDISPOSITIVO " + currentDevice.getId().toString());
+            try {
+                while (currentDevice.getLinkedRoutes()[0].linked()) {
+                    System.out.print(" \uDBC3\uDC11 ");
+                    System.out.println("\uDBC1\uDC98 ROTTA " + currentDevice.getLinkedRoutes()[0].getId().toString() + " | " + currentDevice.getLinkedRoutes()[0].getCost() + " \uDBC0\uDF70");
+                    System.out.println("↓");
+                    currentDevice = currentDevice.getLinkedRoutes()[0].getTwo();
+                    System.out.print("\uDBC1\uDE57\tDISPOSITIVO " + currentDevice.getId());
+                }
+            } catch (Exception e) {
             }
-        } catch (Exception e) {}
+        }
         System.out.println("\n-----------------------------------------------------------------------------------------------------------");
     }
 
@@ -189,6 +210,6 @@ public class EstimatedRoute {
     }
 
     private boolean canProceed() {
-        return ((hops <= maximumHops || maximumHops == 0) && (cost <= maximumCost || maximumCost == 0) && maximumHops <= authorizedMaximumHops);
+        return ((hops < maximumHops || maximumHops == 0) && (cost < maximumCost || maximumCost == 0) && maximumHops < authorizedMaximumHops);
     }
 }
