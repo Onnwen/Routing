@@ -27,6 +27,15 @@ public class Route {
         return this.id.toString().equals(route.getId().toString());
     }
 
+    public String getStringCost() {
+        if (cost == 0) {
+            return "0 \uDBC0\uDF6F";
+        }
+        else {
+            return cost + " \uDBC0\uDF70";
+        }
+    }
+
     public Route copy() {
         return new Route(this.id, this.cost);
     }

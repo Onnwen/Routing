@@ -9,6 +9,7 @@ public class EstimatedRoute {
     private int maximumHops;
     private int maximumCost;
     private int authorizedMaximumHops;
+    private int attempt;
 
     public EstimatedRoute(Device sendingDevice, Device arrivingDevice, Network net) {
         this.startingPoint = sendingDevice.copy();
@@ -17,6 +18,7 @@ public class EstimatedRoute {
         this.maximumHops = 0;
         this.maximumCost = 0;
         this.authorizedMaximumHops = 100;
+        this.attempt = 1;
         this.cost = 0;
         this.hops = 0;
 
@@ -100,6 +102,7 @@ public class EstimatedRoute {
     }
 
     public void removeLastHop() {
+        attempt++;
         decreaseCost(getLastRoute().getCost());
         decreaseHops();
         removeLastRoute();
@@ -126,7 +129,7 @@ public class EstimatedRoute {
     }
 
     public void print() {
-        System.out.println("-----------------------------------------------------------------------------------------------------------");
+        System.out.println("-----------------------------------------------------------");
         if (!getLastDevice().sameAs(arrivingDevice)) {
             System.out.println("\uDBC0\uDD84\tNessun percorso trovato.");
             System.out.println("\uDBC1\uDE72\tPARTENZA: " + startingPoint.getId());
@@ -135,20 +138,21 @@ public class EstimatedRoute {
         } else {
             Device currentDevice = startingPoint;
             System.out.println("\uDBC0\uDD85\tÈ stato trovato un percorso!");
-            System.out.println("\uDBC0\uDE64\tSalti: " + this.hops + " |  \uDBC0\uDF70 Costo: " + this.cost);
-            System.out.print("\n\uDBC1\uDE57\tDISPOSITIVO " + currentDevice.getId().toString());
+            System.out.println("\uDBC0\uDE64\tSalti: " + this.hops + " |  \uDBC0\uDF70 Costo: " + this.cost  + " |  \uDBC1\uDD80 Tentativi: " + this.attempt);
+            System.out.print("\n\uDBC1\uDE72\t\uDBC1\uDE57\tDISPOSITIVO " + currentDevice.getId().toString());
             try {
                 while (currentDevice.getLinkedRoutes()[0].linked()) {
-                    System.out.print(" \uDBC3\uDC11 ");
-                    System.out.println("\uDBC1\uDC98 ROTTA " + currentDevice.getLinkedRoutes()[0].getId().toString() + " | " + currentDevice.getLinkedRoutes()[0].getCost() + " \uDBC0\uDF70");
-                    System.out.println("↓");
+                    System.out.println("\n↓\t\uDBC0\uDE64\tROTTA " + currentDevice.getLinkedRoutes()[0].getId().toString() + " - " + currentDevice.getLinkedRoutes()[0].getStringCost());
                     currentDevice = currentDevice.getLinkedRoutes()[0].getTwo();
-                    System.out.print("\uDBC1\uDE57\tDISPOSITIVO " + currentDevice.getId());
+                    if (currentDevice.getLinkedRoutes()[0].linked()) {
+                        System.out.print("↓\t\uDBC1\uDE57\tDISPOSITIVO " + currentDevice.getId());
+                    }
                 }
             } catch (Exception e) {
+                System.out.print("\uDBC3\uDC58\t\uDBC1\uDE57\tDISPOSITIVO " + currentDevice.getId());
             }
         }
-        System.out.println("\n-----------------------------------------------------------------------------------------------------------");
+        System.out.println("\n-----------------------------------------------------------");
     }
 
     public Route getLastRoute() {
