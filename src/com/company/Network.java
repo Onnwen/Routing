@@ -156,11 +156,10 @@ public class Network {
                 Device foundDevice = generatedDevices[Read.getRandom(0, totalDevices - 1)];
                 do {
                     foundDevice = generatedDevices[Read.getRandom(0, totalDevices - 1)];
-                } while(foundDevice.sameAs(generatedDevice));
+                } while(foundDevice.sameAs(generatedDevice) || foundDevice.alreadyLinked(foundDevice));
                 generatedDevice.addRoute(new Route(UUID.randomUUID(), Read.getRandom(0, 100), generatedDevice, foundDevice));
             }
         }
-
         return new Network(generatedDevices);
     }
 

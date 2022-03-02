@@ -54,4 +54,13 @@ public class Device {
         }
         return false;
     }
+
+    public boolean alreadyLinked(Device device) {
+        for(Route linkedRoute:getLinkedRoutes()) {
+            if (linkedRoute.linkedTo(device)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
