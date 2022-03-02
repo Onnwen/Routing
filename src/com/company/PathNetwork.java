@@ -46,7 +46,7 @@ public class PathNetwork {
     }
 
     public void resetRoutesToAvoid() {
-        this.routesToAvoid = new Route[100];
+        this.routesToAvoid = new Route[1000];
         this.totalRoutesToAvoid = 0;
     }
 

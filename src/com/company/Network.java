@@ -1,10 +1,12 @@
 package com.company;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 public class Network {
     private Device mainDevice;
     private Device[] devices;
+    private final int authorizedMaximumLinkPerDevice = 10;
 
     public Network(Device[] devices) {
         this.devices = devices;
@@ -39,6 +41,29 @@ public class Network {
 
     public Device[] getDevices() {
         return devices;
+    }
+
+    public Route[] getRoutes() {
+        Route[] routes = new Route[devices.length*authorizedMaximumLinkPerDevice];
+        int totalRoutes = 0;
+
+        for(Device device:devices) {
+            for(Route deviceRoute: device.getLinkedRoutes()) {
+                boolean add = true;
+                for(Route route:routes) {
+                    if (route != null && route.sameAs(deviceRoute)) {
+                        add = false;
+                        break;
+                    }
+                }
+                if (add) {
+                    routes[totalRoutes] = deviceRoute;
+                    totalRoutes++;
+                }
+            }
+        }
+
+        return Arrays.copyOf(routes, totalRoutes);
     }
 
     public Device getDevice(UUID uuid) {
@@ -118,5 +143,30 @@ public class Network {
         }
 
         return routesFound;
+    }
+
+    public static Network generate(int totalDevices, int maxLinkPerDevice) {
+        Device[] generatedDevices = new Device[totalDevices];
+        for(int i=0; i<totalDevices; i++) {
+            generatedDevices[i] = new Device(UUID.randomUUID());
+        }
+
+        for(Device generatedDevice: generatedDevices) {
+            for(int i=0; i<Read.getRandom(1, maxLinkPerDevice); i++) {
+                Device foundDevice = generatedDevices[Read.getRandom(0, totalDevices - 1)];
+                do {
+                    foundDevice = generatedDevices[Read.getRandom(0, totalDevices - 1)];
+                } while(foundDevice.sameAs(generatedDevice));
+                generatedDevice.addRoute(new Route(UUID.randomUUID(), Read.getRandom(0, 100), generatedDevice, foundDevice));
+            }
+        }
+
+        return new Network(generatedDevices);
+    }
+
+    public void printFileString() {
+        for(Route route: getRoutes()) {
+            System.out.println(route.getId() + ";" + route.getCost() + ";" + route.getOne().getId() + ";" + route.getTwo().getId());
+        }
     }
 }
