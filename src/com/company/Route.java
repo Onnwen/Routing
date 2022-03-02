@@ -27,6 +27,10 @@ public class Route {
         return this.id.toString().equals(route.getId().toString());
     }
 
+    public boolean similarTo(Route route) {
+        return (one.sameAs(route.one) && two.sameAs(route.two)) || (one.sameAs(route.two) && two.sameAs(route.one));
+    }
+
     public String getStringCost() {
         if (cost == 0) {
             return "0 \uDBC0\uDF6F";

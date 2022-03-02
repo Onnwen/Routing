@@ -10,7 +10,7 @@ public class Device {
 
     public Device(UUID id) {
         this.id = id;
-        this.linkedRoutes = new Route[10];
+        this.linkedRoutes = new Route[100];
         this.totalLinkedRoutes = 0;
     }
 
@@ -46,7 +46,7 @@ public class Device {
         this.totalLinkedRoutes = 0;
     }
 
-    private boolean routeAlreadyLinked(Route route) {
+    public boolean routeAlreadyLinked(Route route) {
         for(Route linkedRoute:getLinkedRoutes()) {
             if (linkedRoute == route) {
                 return true;

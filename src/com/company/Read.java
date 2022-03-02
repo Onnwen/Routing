@@ -35,4 +35,8 @@ public class Read {
             return getUUID();
         }
     }
+
+    public static int getRandom(int min, int max) {
+        return (int)Math.floor(Math.random()*(max-min+1)+min);
+    }
 }
