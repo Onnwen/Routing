@@ -10,7 +10,7 @@ class EstimatedRouteTest {
         new Settings(true, 0, false).print();
     }
 
-    //@org.junit.jupiter.api.Test
+    @org.junit.jupiter.api.Test
     void testEstimateRoute() {
         Network net = FileManagment.loadNetwork();
         net.estimateRoute(net.getDevices()[3], net.getDevices()[7]).print();

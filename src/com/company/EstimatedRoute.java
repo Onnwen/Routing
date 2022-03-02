@@ -149,7 +149,7 @@ public class EstimatedRoute {
             System.out.print("\uDBC0\uDE64\tSalti massimi tentati: " + maximumHops);
         } else {
             Device currentDevice = startingPoint;
-            System.out.println("\uDBC0\uDE64\tSalti: " + this.hops + " | \uDBC0\uDF70 Costo: " + this.cost  + " | \uDBC1\uDD80 Tentativi effettuati: " + this.attempt);
+            System.out.println("\uDBC0\uDE64\tSalti: " + this.hops + " | \uDBC0\uDF70 Costo: " + this.cost  + " | \uDBC1\uDD80 Tentativi totali: " + this.attempt);
             System.out.print("\n\uDBC1\uDE72\t\uDBC1\uDE57\tDISPOSITIVO " + currentDevice.getId().toString());
             try {
                 while (currentDevice.getLinkedRoutes()[0].linked()) {

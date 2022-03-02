@@ -7,12 +7,18 @@ public class RoutesFound {
     private int total;
     private Route[] lastRoutesToAvoid;
     private int totalRoutesToAvoid;
+    private double calculationTime;
 
     public RoutesFound(int totalRoutes) {
         this.total = 0;
         this.lastRoutesToAvoid = new Route[totalRoutes];
         this.routes = new EstimatedRoute[totalRoutes];
         this.totalRoutesToAvoid = 0;
+        this.calculationTime = 0;
+    }
+
+    public void setCalculationTime(double calculationTime) {
+        this.calculationTime = calculationTime;
     }
 
     public int getTotalWantedRoutes() {
@@ -54,14 +60,14 @@ public class RoutesFound {
 
     public void print() {
         if (getRoutes().length > 0) {
-            System.out.println("\n----------------------------------------------------------");
+            System.out.println("\n-------------------------------------------------------------");
             if (getRoutes().length-1 == 1) {
                 System.out.println("\uDBC0\uDD85\t 1 percorso valido trovato.");
             }
             else {
-                System.out.println("\uDBC0\uDD85\t" + (getRoutes().length - 1) + " percorsi validi trovati.");
+                System.out.println("\uDBC0\uDD85 " + (getRoutes().length - 1) + " percorsi validi trovati | \uDBC1\uDD87 Tempo di calcolo: " + calculationTime/1000 + " sec");
             }
-            System.out.println("----------------------------------------------------------");
+            System.out.println("-------------------------------------------------------------");
             if (getMinorCostRoute() == routes[0] || getMinorCostRoute().getHops() == routes[0].getHops()) {
                 System.out.println("Percorso migliore:");
                 if (getMinorCostRoute().getHops() == routes[0].getHops()) {
@@ -74,18 +80,18 @@ public class RoutesFound {
             else {
                 System.out.println("Percorso più veloce:");
                 routes[0].print();
-                System.out.println("\n----------------------------------------------------------");
+                System.out.println("\n-------------------------------------------------------------");
                 System.out.println("Percorso meno costoso:");
                 getMinorCostRoute().print();
             }
             for(EstimatedRoute foundRoute:getRoutes()) {
                 if (foundRoute.validRoute() && foundRoute != routes[0] && foundRoute != getMinorCostRoute()) {
-                    System.out.println("\n----------------------------------------------------------");
+                    System.out.println("\n-------------------------------------------------------------");
                     System.out.println("Percorso alternativo:");
                     foundRoute.print();
                 }
             }
-            System.out.println("\n----------------------------------------------------------");
+            System.out.println("\n-------------------------------------------------------------");
         }
         else {
             try {

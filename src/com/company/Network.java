@@ -1,5 +1,7 @@
 package com.company;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -133,6 +135,8 @@ public class Network {
         final int totalEstimatedRoute = 100;
         RoutesFound routesFound = new RoutesFound(totalEstimatedRoute);
 
+        Instant start = Instant.now();
+
         if (sendingDevice.sameAs(receivingDevice)) {
             System.out.println("\uDBC0\uDD84 I dispositivi di partenza e di arrivo combaciano.");
         }
@@ -142,6 +146,9 @@ public class Network {
             } while(routesFound.getLast().validRoute());
         }
 
+        Instant end = Instant.now();
+
+        routesFound.setCalculationTime(Duration.between(start, end).toMillis());
         return routesFound;
     }
 
