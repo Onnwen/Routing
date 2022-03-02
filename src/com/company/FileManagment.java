@@ -2,14 +2,13 @@ package com.company;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.UUID;
 
 public class FileManagment {
-    public static File routesFile = new File("routes4.csv");
+    public static File routesFile = new File("routes1-small.csv");
 
     public static void createFiles() {
         createRoutesFile();
@@ -23,7 +22,7 @@ public class FileManagment {
 
     public static Network loadNetwork() {
         try {
-            createFiles();
+            // createFiles();
             Device[] devicesList = getDevicesArray();
             Scanner fileScanner = new Scanner(routesFile);
             Route[] routesList = new Route[getFileLines(routesFile)];
