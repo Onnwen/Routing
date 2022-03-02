@@ -108,9 +108,14 @@ public class Network {
         final int totalEstimatedRoute = 100;
         RoutesFound routesFound = new RoutesFound(totalEstimatedRoute);
 
-        do {
-            routesFound.addFoundRoute(new EstimatedRoute(sendingDevice, receivingDevice, this, routesFound.getRoutesToAvoid()));
-        } while(routesFound.getLast().validRoute());
+        if (sendingDevice.sameAs(receivingDevice)) {
+            System.out.println("\uDBC0\uDD84 I dispositivi di partenza e di arrivo combaciano.");
+        }
+        else {
+            do {
+                routesFound.addFoundRoute(new EstimatedRoute(sendingDevice, receivingDevice, this, routesFound.getRoutesToAvoid()));
+            } while(routesFound.getLast().validRoute());
+        }
 
         return routesFound;
     }
