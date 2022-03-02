@@ -8,7 +8,7 @@ import java.util.Scanner;
 import java.util.UUID;
 
 public class FileManagment {
-    public static File routesFile = new File("routes1-small.csv");
+    public static File routesFile = new File("routes2-medium.csv");
 
     public static void createFiles() {
         createRoutesFile();

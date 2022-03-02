@@ -62,9 +62,14 @@ public class RoutesFound {
                 System.out.println("\uDBC0\uDD85\t" + (getRoutes().length - 1) + " percorsi validi trovati.");
             }
             System.out.println("----------------------------------------------------------");
-            if (getMinorCostRoute() == routes[0]) {
+            if (getMinorCostRoute() == routes[0] || getMinorCostRoute().getHops() == routes[0].getHops()) {
                 System.out.println("Percorso migliore:");
-                routes[0].print();
+                if (getMinorCostRoute().getHops() == routes[0].getHops()) {
+                    getMinorCostRoute().print();
+                }
+                else {
+                    routes[0].print();
+                }
             }
             else {
                 System.out.println("Percorso più veloce:");
