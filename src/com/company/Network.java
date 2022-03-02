@@ -33,14 +33,14 @@ public class Network {
         Route[] routes = device.getLinkedRoutes();
 
         System.out.println("-------------------------------------------");
-        System.out.println("Device " + device.getId().toString());
+        System.out.println("\uDBC1\uDE57 " + device.getId().toString());
         System.out.println("Connesso a:");
 
         for(int i=0; i<device.getLinkedRoutes().length; i++) {
-            System.out.println("[" + (i+1) + "] Device " + routes[i].getNextDevice(device).getId().toString() + " tramite la rotta " + routes[i].getId().toString() + ".");
+            System.out.println("[" + (i+1) + "] \uDBC1\uDE57 " + routes[i].getNextDevice(device).getId().toString() + " \uDBC3\uDC11 \uDBC0\uDE64 " + routes[i].getId().toString());
         }
 
-        System.out.print("Digitare l'indice di un dispositivo per mostrare i dispositivi ai quali è connesso oppure digitare l'indice preceduto da un meno per selezionare il dispositivo come estremità della rotta:\n-> ");
+        System.out.println("Digitare l'indice di un dispositivo per mostrare i dispositivi ai quali è connesso oppure digitare l'indice preceduto da un meno per selezionare il dispositivo come estremità del percorso:");
         int input = Read.getInt(-routes.length, routes.length);
         if (input != 0) {
             if (input < 0) {

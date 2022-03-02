@@ -5,6 +5,7 @@ import java.util.Scanner;
 public class Read {
     public static int getInt(int min, int max) {
         Scanner scanner = new Scanner(System.in);
+        System.out.print("\uDBC0\uDD8A ");
 
         try {
             int input = scanner.nextInt();

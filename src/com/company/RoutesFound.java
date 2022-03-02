@@ -55,7 +55,7 @@ public class RoutesFound {
     public void print() {
         if (getRoutes().length > 0) {
             System.out.println("\n----------------------------------------------------------");
-            System.out.println("\uDBC0\uDD85\t" + getRoutes().length + " percorsi validi trovati.");
+            System.out.println("\uDBC0\uDD85\t" + (getRoutes().length-1) + " percorsi validi trovati.");
             System.out.println("----------------------------------------------------------");
             if (getMinorCostRoute() == routes[0]) {
                 System.out.println("Percorso migliore:");
